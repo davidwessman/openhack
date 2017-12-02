@@ -3,14 +3,28 @@ Example application showing the use of the Translate method in the Text Translat
 """
 
 from auth import AzureAuthClient
-import requests
 import json
+import requests
 
 
 def change(text):
-    text = text.replace('å', '&#229;').replace('Å', '&#197;')
+    text = text.replace('Röst',' ').replace('röst',' ')
+    text = text.replace('sju','<prosody rate="-30.00%">sju</prosody>')
+    text = text.replace('är', '<prosody rate="-40.00%">&#603;r</prosody>')
+    text = text.replace('så','så,')
+    text = text.replace('roligt', '<prosody contour="(80%,+20%) (90%,+30%)">roligt</prosody>')
+    text = text.replace('väldigt', '<prosody contour="(80%,+20%) (90%,+30%)">väldigt</prosody>')
     text = text.replace('ä', '&#228;').replace('Ä', '&#196;')
     text = text.replace('ö', '&#246;').replace('Ö', '&#214;')
+    text = text.replace('ekorre', '<prosody rate="-40.00%">ekorren</prosody>')
+    text = text.replace('Ekorrar', '<prosody rate="-40.00%">ekorrar</prosody>')
+    text = text.replace('ekorrar', '<prosody rate="-40.00%">ekorrar</prosody>')
+    text = text.replace('ett', 'ett,')
+    text = text.replace('två', 'två,')
+    text = text.replace('tre', 'tre,')
+    text = text.replace('fem', 'fem,')
+    text = text.replace('sju ', '&#615;&#649;,')
+    text = text.replace('å', '&#229;').replace('Å', '&#197;')
     return text
 
 
@@ -23,7 +37,11 @@ def TextToSpeech(finalToken, text):
                    'Content-Type': 'application/ssml+xml'}
 
         translateUrl = "https://speech.platform.bing.com/synthesize"
-        data = '<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xml:lang="sv-SE"><voice xml:lang="sv-SE" name="Microsoft Server Speech Text to Speech Voice (sv-SE, HedvigRUS)">{}</voice></speak>'.format(text)
+        data = '<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" ' \
+               'xmlns:mstts="http://www.w3.org/2001/mstts" ' \
+               'xml:lang="sv-SE"><voice xml:lang="sv-SE" ' \
+               'name="Microsoft Server Speech Text to Speech Voice (sv-SE, HedvigRUS)">{}' \
+               '</voice></speak>'.format(text)
 
         translationData = s.post(translateUrl, data=data, headers=headers, stream=True)
         return bytes(translationData.content)
@@ -52,4 +70,3 @@ if __name__ == "__main__":
         mp3data = TextToSpeech(bearer_token, text)
         with open("media/{}/{}.mp3".format(name, i), 'wb') as f:
             f.write(mp3data)
-
