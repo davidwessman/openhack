@@ -4,7 +4,7 @@ Example application showing the use of the Translate method in the Text Translat
 
 from auth import AzureAuthClient
 import requests
-import untangle
+import json
 
 
 def change(text):
@@ -37,7 +37,11 @@ def TextToSpeech(finalToken, text):
                    'Content-Type': 'application/ssml+xml'}
 
         translateUrl = "https://speech.platform.bing.com/synthesize"
-        data = '<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xml:lang="sv-SE"><voice xml:lang="sv-SE" name="Microsoft Server Speech Text to Speech Voice (sv-SE, HedvigRUS)">{}</voice></speak>'.format(text)
+        data = '<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" ' \
+               'xmlns:mstts="http://www.w3.org/2001/mstts" ' \
+               'xml:lang="sv-SE"><voice xml:lang="sv-SE" ' \
+               'name="Microsoft Server Speech Text to Speech Voice (sv-SE, HedvigRUS)">{}' \
+               '</voice></speak>'.format(text)
 
         translationData = s.post(translateUrl, data=data, headers=headers, stream=True)
         return bytes(translationData.content)
@@ -52,17 +56,17 @@ if __name__ == "__main__":
 
     s = ""
     data = []
-    obj = untangle.parse('timedtext.xml')
-    for c in obj.transcript.children:
-        data.append((c["start"], c["dur"], c.cdata))
-        s += c.cdata
-    with open("text.txt", 'w') as f:
-        f.write("media/" + name + "/" + s)
+    with open("media/" + name + "/text.json") as f:
+        j = json.loads(f.read())
+    for c in j:
+        data.append((c["start"], c["duration"], c["text"]))
+        s += c["text"]
+    with open("media/" + name + "/text.txt", 'w') as f:
+        f.write(s)
 
-    for i in range(0,19):#len(data)):
+    for i in range(len(data)):
         time, dur, text = data[i]
         bearer_token = 'Bearer ' + auth_client.get_access_token().decode('ascii')
         mp3data = TextToSpeech(bearer_token, text)
         with open("media/{}/{}.mp3".format(name, i), 'wb') as f:
             f.write(mp3data)
-
