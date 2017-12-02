@@ -4,7 +4,7 @@ Example application showing the use of the Translate method in the Text Translat
 
 from auth import AzureAuthClient
 import requests
-import untangle
+import json
 
 
 def change(text):
@@ -38,14 +38,15 @@ if __name__ == "__main__":
 
     s = ""
     data = []
-    obj = untangle.parse('timedtext.xml')
-    for c in obj.transcript.children:
-        data.append((c["start"], c["dur"], c.cdata))
-        s += c.cdata
-    with open("text.txt", 'w') as f:
-        f.write("media/" + name + "/" + s)
+    with open("media/" + name + "/text.json") as f:
+        j = json.loads(f.read())
+    for c in j:
+        data.append((c["start"], c["duration"], c["text"]))
+        s += c["text"]
+    with open("media/" + name + "/text.txt", 'w') as f:
+        f.write(s)
 
-    for i in range(19,20):#len(data)):
+    for i in range(len(data)):
         time, dur, text = data[i]
         bearer_token = 'Bearer ' + auth_client.get_access_token().decode('ascii')
         mp3data = TextToSpeech(bearer_token, text)
