@@ -8,9 +8,23 @@ import untangle
 
 
 def change(text):
-    text = text.replace('å', '&#229;').replace('Å', '&#197;')
+    text = text.replace('Röst',' ').replace('röst',' ')
+    text = text.replace('sju','<prosody rate="-30.00%">sju</prosody>')
+    text = text.replace('är', '<prosody rate="-40.00%">&#603;r</prosody>')
+    text = text.replace('så','så,')
+    text = text.replace('roligt', '<prosody contour="(80%,+20%) (90%,+30%)">roligt</prosody>')
+    text = text.replace('väldigt', '<prosody contour="(80%,+20%) (90%,+30%)">väldigt</prosody>')
     text = text.replace('ä', '&#228;').replace('Ä', '&#196;')
     text = text.replace('ö', '&#246;').replace('Ö', '&#214;')
+    text = text.replace('ekorre', '<prosody rate="-40.00%">ekorren</prosody>')
+    text = text.replace('Ekorrar', '<prosody rate="-40.00%">ekorrar</prosody>')
+    text = text.replace('ekorrar', '<prosody rate="-40.00%">ekorrar</prosody>')
+    text = text.replace('ett', 'ett,')
+    text = text.replace('två', 'två,')
+    text = text.replace('tre','tre,')
+    text = text.replace('fem', 'fem,')
+    text = text.replace('sju ', '&#615;&#649;,')
+    text = text.replace('å', '&#229;').replace('Å', '&#197;')
     return text
 
 
@@ -45,7 +59,7 @@ if __name__ == "__main__":
     with open("text.txt", 'w') as f:
         f.write("media/" + name + "/" + s)
 
-    for i in range(19,20):#len(data)):
+    for i in range(0,19):#len(data)):
         time, dur, text = data[i]
         bearer_token = 'Bearer ' + auth_client.get_access_token().decode('ascii')
         mp3data = TextToSpeech(bearer_token, text)

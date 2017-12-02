@@ -6,8 +6,8 @@ playlistLink = 'https://www.youtube.com/playlist?list=PLql1guR0G27vdWY8EM6E8mYWI
 
 r = requests.get(playlistLink)
 page = r.text
-soup=bs(page,'html.parser')
-res=soup.find_all('a',{'class':'pl-video-title-link'})
+soup = bs(page,'html.parser')
+res = soup.find_all('a', {'class': 'pl-video-title-link'})
 
 urls = list(map(lambda x: 'https://www.youtube.com' + x.get("href"), res))
 
