@@ -3,8 +3,8 @@ Example application showing the use of the Translate method in the Text Translat
 """
 
 from auth import AzureAuthClient
-import requests
 import json
+import requests
 
 
 def change(text):
@@ -21,7 +21,7 @@ def change(text):
     text = text.replace('ekorrar', '<prosody rate="-40.00%">ekorrar</prosody>')
     text = text.replace('ett', 'ett,')
     text = text.replace('två', 'två,')
-    text = text.replace('tre','tre,')
+    text = text.replace('tre', 'tre,')
     text = text.replace('fem', 'fem,')
     text = text.replace('sju ', '&#615;&#649;,')
     text = text.replace('å', '&#229;').replace('Å', '&#197;')
