@@ -166,7 +166,7 @@ if __name__ == '__main__':
     # running in production *do not* leave this option enabled.
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
     client = get_authenticated_service()
-    media_file = '../Counting_with small_numbers.mp4'
+    media_file = 'videos/Counting_with small_numbers.mp4'
     if not os.path.exists(media_file):
         exit('Please specify a valid file location.')
 
