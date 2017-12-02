@@ -175,7 +175,7 @@ if __name__ == '__main__':
                    'snippet.title': 'Test video upload',
                    'status.embeddable': '',
                    'status.license': '',
-                   'status.privacyStatus': 'private',
+                   'status.privacyStatus': 'public',
                    'status.publicStatsViewable': ''},
                   media_file,
                   part='snippet,status')
