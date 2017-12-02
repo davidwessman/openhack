@@ -2,13 +2,21 @@
 Example application showing the use of the Translate method in the Text Translation API.
 """
 
-from xml.etree import ElementTree
 from auth import AzureAuthClient
 import requests
 import untangle
 
+
+def change(text):
+    text = text.replace('å', '&#229;').replace('Å', '&#197;')
+    text = text.replace('ä', '&#228;').replace('Ä', '&#196;')
+    text = text.replace('ö', '&#246;').replace('Ö', '&#214;')
+    return text
+
+
 def TextToSpeech(finalToken, text):
     # Call to Microsoft Translator Service
+    text = change(text)
     with requests.Session() as s:
         headers = {'Authorization': finalToken,
                    'X-Microsoft-OutputFormat': 'audio-16khz-64kbitrate-mono-mp3',
@@ -32,11 +40,10 @@ if __name__ == "__main__":
         data.append((c["start"], c["dur"], c.cdata))
     print(data)
 
-    for i in range(len(data)):
+    for i in range(2, 3):
         time, dur, text = data[i]
         bearer_token = 'Bearer ' + auth_client.get_access_token().decode('ascii')
         mp3data = TextToSpeech(bearer_token, text)
         with open("{}.mp3".format(i), 'wb') as f:
             f.write(mp3data)
-
 
