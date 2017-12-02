@@ -34,16 +34,21 @@ if __name__ == "__main__":
     client_secret = 'e9fc657f5c9247cfac2a9ff582a91716'
     auth_client = AzureAuthClient(client_secret)
 
+    name = "squirrel"
+
+    s = ""
     data = []
     obj = untangle.parse('timedtext.xml')
     for c in obj.transcript.children:
         data.append((c["start"], c["dur"], c.cdata))
-    print(data)
+        s += c.cdata
+    with open("text.txt", 'w') as f:
+        f.write("media/" + name + "/" + s)
 
-    for i in range(2, 3):
+    for i in range(19,20):#len(data)):
         time, dur, text = data[i]
         bearer_token = 'Bearer ' + auth_client.get_access_token().decode('ascii')
         mp3data = TextToSpeech(bearer_token, text)
-        with open("{}.mp3".format(i), 'wb') as f:
+        with open("media/{}/{}.mp3".format(name, i), 'wb') as f:
             f.write(mp3data)
 
