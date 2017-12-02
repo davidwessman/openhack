@@ -5,11 +5,9 @@ Example application showing the use of the Translate method in the Text Translat
 from xml.etree import ElementTree
 from auth import AzureAuthClient
 import requests
-import base64
+import untangle
 
-doItAgain = "yes"
-
-def TextToSpeech(finalToken):
+def TextToSpeech(finalToken, text):
     # Call to Microsoft Translator Service
     with requests.Session() as s:
         headers = {'Authorization': finalToken,
@@ -17,18 +15,28 @@ def TextToSpeech(finalToken):
                    'Content-Type': 'application/ssml+xml'}
 
         translateUrl = "https://speech.platform.bing.com/synthesize"
-        data = '<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xml:lang="sv-SE"><voice xml:lang="sv-SE" name="Microsoft Server Speech Text to Speech Voice (sv-SE, HedvigRUS)">Hej, jag heter Khan och jag har 10 + 5.3 katter, vad blir sin(x)</voice></speak>'
+        data = '<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xml:lang="sv-SE"><voice xml:lang="sv-SE" name="Microsoft Server Speech Text to Speech Voice (sv-SE, HedvigRUS)">{}</voice></speak>'.format(text)
 
         translationData = s.post(translateUrl, data=data, headers=headers, stream=True)
-        file = open('./sound.mp3', 'wb')
-        bs = bytes(translationData.content)
-        file.write(bs)
+        return bytes(translationData.content)
 
 
 if __name__ == "__main__":
 
     client_secret = 'e9fc657f5c9247cfac2a9ff582a91716'
     auth_client = AzureAuthClient(client_secret)
-    bearer_token = 'Bearer ' + auth_client.get_access_token().decode('ascii')
-    TextToSpeech(bearer_token)
-    print(' ')
+
+    data = []
+    obj = untangle.parse('timedtext.xml')
+    for c in obj.transcript.children:
+        data.append((c["start"], c["dur"], c.cdata))
+    print(data)
+
+    for i in range(len(data)):
+        time, dur, text = data[i]
+        bearer_token = 'Bearer ' + auth_client.get_access_token().decode('ascii')
+        mp3data = TextToSpeech(bearer_token, text)
+        with open("{}.mp3".format(i), 'wb') as f:
+            f.write(mp3data)
+
+
