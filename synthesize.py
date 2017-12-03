@@ -5,6 +5,7 @@ Example application showing the use of the Translate method in the Text Translat
 from auth import AzureAuthClient
 import json
 import requests
+import time
 from functools import reduce
 
 
@@ -53,8 +54,17 @@ def TextToSpeech(finalToken, text):
         translateUrl = "https://speech.platform.bing.com/synthesize"
         data = '<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xml:lang="sv-SE"><voice xml:lang="sv-SE" name="Microsoft Server Speech Text to Speech Voice (sv-SE, HedvigRUS)">{}</voice></speak>'.format(text)
 
-        translationData = s.post(translateUrl, data=data, headers=headers, stream=True)
-        return bytes(translationData.content)
+        translation = s.post(translateUrl, data=data, headers=headers, stream=True)
+        while translation.status_code == 429:
+            print("Used all translations this minute, waiting 30 seconds.")
+            time.sleep(30)
+            translation = s.post(translateUrl, data=data, headers=headers, stream=True)
+
+        if translation.status_code != 200:
+            print("[ERROR]: Unable to connect to Microsoft Cognitive Services")
+            print("Response code: " + str(translation.status_code))
+
+        return bytes(translation.content)
 
 
 def synthesize(dir, cap_path):
@@ -68,7 +78,7 @@ def synthesize(dir, cap_path):
     with open(dir + cap_path) as f:
         j = json.loads(f.read())
     for c in j:
-        data.append((c["start"], c["dur"], c["text"]))
+        data.append((c["start"], c["duration"], c["text"]))
         s += c["text"]
     with open(dir + "text.txt", 'w') as f:
         f.write(s)
