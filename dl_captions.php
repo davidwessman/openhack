@@ -92,5 +92,4 @@ foreach ($xml->text as $elem) {
     );
 }
 
-/* print_r($data); */
-echo json_encode($data);
+file_put_contents("media/tmp/" . $vid . ".json", json_encode($data));

@@ -1,8 +1,8 @@
+import sys
 from pytube import YouTube
 from bs4 import BeautifulSoup as bs
 import requests
 from urllib.parse import urlparse, parse_qs
-
 
 def get_id(url):
     u_pars = urlparse(url)
@@ -13,22 +13,17 @@ def get_id(url):
     if pth:
         return pth[-1]
 
+def get_urls(link):
+    # playlistLink = 'https://www.youtube.com/playlist?list=PLql1guR0G27vdWY8EM6E8mYWIZhpRrefz'
+    playlistLink = sys.argv[1]
+    r = requests.get(playlistLink)
+    page = r.text
+    soup = bs(page,'html.parser')
+    res = soup.find_all('a', {'class': 'pl-video-title-link'})
 
-playlistLink = 'https://www.youtube.com/playlist?list=PLql1guR0G27vdWY8EM6E8mYWIZhpRrefz'
-
-r = requests.get(playlistLink)
-page = r.text
-soup = bs(page,'html.parser')
-res = soup.find_all('a', {'class': 'pl-video-title-link'})
-
-print(x)
-
-urls = list(map(lambda x: 'https://www.youtube.com' + x.get("href"), res))
-ids = list(map(lambda x: get_id(x), urls))
-
-# for url in urls:
-#     print('Downloading   '+url)
-#     yt = YouTube(url)
-#     yt.streams.first().download('./media/videos')
-
-print('DONE')
+    urls = list(map(lambda x: 'https://www.youtube.com' + x.get("href"), res))
+    return urls
+def dl_video(url):
+    print('Downloading   '+url)
+    yt = YouTube(url)
+    yt.streams.first().download('./media/tmp')

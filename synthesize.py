@@ -57,26 +57,25 @@ def TextToSpeech(finalToken, text):
         return bytes(translationData.content)
 
 
-if __name__ == "__main__":
-
+def synthesize(dir, cap_path):
     client_secret = 'e9fc657f5c9247cfac2a9ff582a91716'
     auth_client = AzureAuthClient(client_secret)
 
-    name = "squirrel"
+    # name = "squirrel"
 
     s = ""
     data = []
-    with open("media/" + name + "/text.json") as f:
+    with open(dir + cap_path) as f:
         j = json.loads(f.read())
     for c in j:
         data.append((c["start"], c["dur"], c["text"]))
         s += c["text"]
-    with open("media/" + name + "/text.txt", 'w') as f:
+    with open(dir + "text.txt", 'w') as f:
         f.write(s)
 
     for i in range(len(data)):
         time, dur, text = data[i]
         bearer_token = 'Bearer ' + auth_client.get_access_token().decode('ascii')
         mp3data = TextToSpeech(bearer_token, text)
-        with open("media/{}/{}.mp3".format(name, i), 'wb') as f:
+        with open("media/tmp/{}.mp3".format(i), 'wb') as f:
             f.write(mp3data)
