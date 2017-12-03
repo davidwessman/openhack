@@ -1,5 +1,17 @@
 # -*- coding: utf-8 -*-
 
+# PREREQUISITES
+# The pip package management tool
+# The Google APIs Client Library for Python:
+#   pip install --upgrade google-api-python-client
+# The google-auth, google-auth-oauthlib, and google-auth-httplib2 for user authorization.
+#   pip install --upgrade google-auth google-auth-oauthlib google-auth-httplib2
+# The Flask Python web application framework (if you are running the Python samples for web server applications).
+#   pip install --upgrade flask
+# The requests HTTP library.
+#   pip install --upgrade requests
+# based on: https://developers.google.com/youtube/v3/docs/videos/insert
+
 import os
 
 #import httplib
