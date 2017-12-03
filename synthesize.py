@@ -5,26 +5,40 @@ Example application showing the use of the Translate method in the Text Translat
 from auth import AzureAuthClient
 import json
 import requests
+from functools import reduce
 
 
 def change(text):
-    text = text.replace('Röst',' ').replace('röst',' ')
-    text = text.replace('sju','<prosody rate="-30.00%">sju</prosody>')
-    text = text.replace('är', '<prosody rate="-40.00%">&#603;r</prosody>')
-    text = text.replace('så','så,')
-    text = text.replace('roligt', '<prosody contour="(80%,+20%) (90%,+30%)">roligt</prosody>')
-    text = text.replace('väldigt', '<prosody contour="(80%,+20%) (90%,+30%)">väldigt</prosody>')
-    text = text.replace('ä', '&#228;').replace('Ä', '&#196;')
-    text = text.replace('ö', '&#246;').replace('Ö', '&#214;')
-    text = text.replace('ekorre', '<prosody rate="-40.00%">ekorren</prosody>')
-    text = text.replace('Ekorrar', '<prosody rate="-40.00%">ekorrar</prosody>')
-    text = text.replace('ekorrar', '<prosody rate="-40.00%">ekorrar</prosody>')
-    text = text.replace('ett', 'ett,')
-    text = text.replace('två', 'två,')
-    text = text.replace('tre', 'tre,')
-    text = text.replace('fem', 'fem,')
-    text = text.replace('sju ', '&#615;&#649;,')
-    text = text.replace('å', '&#229;').replace('Å', '&#197;')
+    dict = {}
+    dict['Röst'] = ' '
+    dict['så'] = 'så,'
+    dict['roligt'] = '<prosody contour="(80%,+50%) (90%,+30%)">roligt</prosody>'
+    dict['väldigt'] = '<prosody contour="(80%,+50%) (90%,+30%)">väldigt</prosody>'
+    dict['ett'] = 'ett,'
+    dict['två'] = 'två,'
+    dict['tre'] = 'tre,'
+    dict['fyra'] = 'fyra,'
+    dict['fem'] = 'fem,'
+    dict['sex'] = 'sex,'
+    dict['sju'] = '<prosody rate="-30.00%">sju</prosody>'
+    dict['åtta'] = 'åtta,'
+    dict['nio'] = 'nio,'
+    dict['ännu'] = 'ännu,'
+    dict['är'] = '<prosody rate="-40.00%">&#603;r</prosody>'
+    dict['ekorre'] = '<prosody rate="-40.00%">ekorren</prosody>'
+    dict['å'] = '&#229;'
+    dict['ä'] = '&#228;'
+    dict['ö'] = '&#246;'
+    for word, initial in dict.items():
+        text = text.replace(word.lower(), initial)
+    # text = text.replace('Röst', ' ').replace('röst', ' ')
+    # text = text.replace('sju', '<prosody rate="-30.00%">sju</prosody>')
+    # text = text.replace('är', '<prosody rate="-40.00%">&#603;r</prosody>')
+    # text = text.replace('så', 'så,')
+    # text = text.replace('roligt', '<prosody contour="(80%,+50%) (90%,+30%)">roligt</prosody>')
+    # text = text.replace('väldigt', '<prosody contour="(80%,+50%) (90%,+30%)">väldigt</prosody>')
+    # #text = text.replace('ekorre', '<prosody rate="-40.00%">ekorren</prosody>')
+    # #text = text.replace('ekorrar', '<prosody rate="-40.00%">ekorrar</prosody>')
     return text
 
 
@@ -55,7 +69,7 @@ if __name__ == "__main__":
     with open("media/" + name + "/text.json") as f:
         j = json.loads(f.read())
     for c in j:
-        data.append((c["start"], c["duration"], c["text"]))
+        data.append((c["start"], c["dur"], c["text"]))
         s += c["text"]
     with open("media/" + name + "/text.txt", 'w') as f:
         f.write(s)
