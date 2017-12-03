@@ -9,6 +9,7 @@ from change_audio import *
 link = sys.argv[1]
 urls = get_urls(link)
 print(urls)
+save_metadata(link)
 
 for url in urls:
     

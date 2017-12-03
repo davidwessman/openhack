@@ -29,6 +29,7 @@ from apiclient.http import MediaFileUpload
 from os import listdir
 from os.path import join
 from googletrans import Translator
+from download_playlist import *
 
 # The CLIENT_SECRETS_FILE variable specifies the name of a file that contains
 # the OAuth 2.0 information for this application, including its client_id and
@@ -176,15 +177,20 @@ def videos_insert(client, properties, media_file, **kwargs):
 
 translator = Translator()
 
+# Load metadata for the videos from youtube
+in_file = open("metadata.json", "r")
+descriptions = json.load(in_file)
+in_file.close()
+
 if __name__ == '__main__':
     # When running locally, disable OAuthlib's HTTPs verification. When
     # running in production *do not* leave this option enabled.
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
     client = get_authenticated_service()
-    path = 'videos/'
+    path = 'media/ready/'
     for f in listdir(path):
         print('file name: ', f)
-        media_file = join(path, f)#'videos/Counting_with small_numbers.mp4'
+        media_file = join(path, f) #'videos/Counting_with small_numbers.mp4'
         translated_title = translator.translate(f[:-(4+12)], src='en', dest='sv').text
         final_title = join(translated_title, ' Khan Academy')
         print('final title: ', final_title)
@@ -194,7 +200,7 @@ if __name__ == '__main__':
         videos_insert(client,
                     {'snippet.categoryId': '22',
                     'snippet.defaultLanguage': '',
-                    'snippet.description': 'Description of uploaded video.',
+                    'snippet.description': descriptions[f[:-4]],
                     'snippet.tags[]': '',
                     'snippet.title': final_title,
                     'status.embeddable': '',

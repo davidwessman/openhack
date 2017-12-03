@@ -15,7 +15,7 @@ def get_id(url):
 
 def get_urls(link):
     # playlistLink = 'https://www.youtube.com/playlist?list=PLql1guR0G27vdWY8EM6E8mYWIZhpRrefz'
-    playlistLink = sys.argv[1]
+    playlistLink = link #sys.argv[1]
     r = requests.get(playlistLink)
     page = r.text
     soup = bs(page,'html.parser')
@@ -23,7 +23,25 @@ def get_urls(link):
 
     urls = list(map(lambda x: 'https://www.youtube.com' + x.get("href"), res))
     return urls
+
 def dl_video(url):
     print('Downloading   '+url)
     yt = YouTube(url)
     yt.streams.first().download('./media/tmp')
+
+import json
+def save_metadata(link):
+    urls = get_urls(link)
+    descr = []
+    titles = []
+    for url in urls:
+        r = requests.get(url)
+        page = r.text
+        soup = bs(page,'html.parser')
+        title = soup.find(id='eow-title')
+        titles.append(title.text.strip().replace('|',''))
+        description_tag = soup.find(id='eow-description')
+        descr.append(description_tag.text)
+    dictionary = dict(zip(titles, descr))
+    out_file = open('metadata.json','w')
+    json.dump(dictionary, out_file, indent=4)
